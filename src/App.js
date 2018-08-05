@@ -1,12 +1,10 @@
-import React from 'react'
-
+import React from 'react';
 import { Route } from 'react-router-dom';
 
-// import * as BooksAPI from './BooksAPI'
 import Search from './containers/Search/Search';
 import Shelf from './containers/Shelf/Shelf';
 
-import './styles/App.css'
+import './styles/App.css';
 
 /**
  * @description Todo o stado vai ficar nessa classe, tentando aproveitar a maioria dos componentes
@@ -30,19 +28,17 @@ class App extends React.Component {
 
   handleChange(status) {
     this.setState({ showSearchPage: status })
-
-    console.log(this.state);  
   }
 
   render() {
     return(
       <div className="app">
-        <Route exact path="/" render={() => {
-          <Shelf onChangeStatus={this.handleChange}/>
-        }}/>
-        <Route path='/search' render={() => {
+        <Route exact path="/" render={() => (
+          <Shelf onChangeStatus={this.handleChange} />
+        )}/>
+        <Route path="/search" render={() => (
           <Search onChangeStatus={this.handleChange} />
-        }} />
+        )}/>
       </div>
     );
   }

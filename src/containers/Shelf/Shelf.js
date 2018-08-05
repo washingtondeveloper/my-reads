@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Link } from 'react-router-dom';
+
 import BookHeader from '../../components/BookHeader/BookHeader';
 import BookShelf from '../../components/BookShelf/BookShelf';
 
@@ -37,7 +39,7 @@ export default props => (
             </div>
         </div>
         <div className="open-search">
-            <a onClick={() => props.onChangeStatus(true)}>Add a book</a>
+            <Link to="/search">Add a book</Link>
         </div>
     </div>
 );
