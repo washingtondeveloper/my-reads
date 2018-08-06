@@ -8,7 +8,7 @@ export default props => (
     <li>
         <div className="book">
             <div className="book-top">
-                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${props.url})` }}></div>
+                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${props.imageLinks ? props.imageLinks.thumbnail : ''})` }}></div>
                 <div className="book-shelf-changer">
                     <select>
                         <option value="move" disabled>Move to...</option>
@@ -20,7 +20,9 @@ export default props => (
                 </div>
             </div>
             <div className="book-title">{props.title}</div>
-            <div className="book-authors">{props.authors}</div>
+            {props.authors && 
+                <div className="book-authors">{props.authors.reduce((textFinal, author) => `${textFinal}, ${author}`)}</div>
+            }
         </div>
     </li>
 );

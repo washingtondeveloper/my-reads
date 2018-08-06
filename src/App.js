@@ -1,6 +1,8 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 
+import * as BooksAPI from './services/BooksAPI'
+
 import Search from './containers/Search/Search';
 import Shelf from './containers/Shelf/Shelf';
 
@@ -13,31 +15,40 @@ class App extends React.Component {
 
   constructor(props) {
     super(props);
+    
     this.state = {
-      /**
-       * TODO: Instead of using this state variable to keep track of which page
-       * we're on, use the URL in the browser's address bar. This will ensure that
-       * users can use the browser's back and forward buttons to navigate between
-       * pages, as well as provide a good URL they can bookmark and share.
-       */
-      showSearchPage: false
+      listBooks: []
     }
 
-    this.handleChange = this.handleChange.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
+
   }
 
-  handleChange(status) {
-    this.setState({ showSearchPage: status })
+  /**
+   * @description Responsavel em pesquisar os Livros
+   * @param {string} event 
+   */
+  handleSearch(event) {
+    let query = event.target.value;
+    if(query){
+      BooksAPI.search(query)
+        .then(result => {
+          this.setState({ listBooks: result})
+        });
+    }
   }
 
   render() {
     return(
       <div className="app">
         <Route exact path="/" render={() => (
-          <Shelf onChangeStatus={this.handleChange} />
+          <Shelf  />
         )}/>
         <Route path="/search" render={() => (
-          <Search onChangeStatus={this.handleChange} />
+          <Search 
+            onChangeSearch={this.handleSearch}
+            listBooks={this.state.listBooks}
+          />
         )}/>
       </div>
     );

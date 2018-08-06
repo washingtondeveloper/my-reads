@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-// import BookList from '../../components/BookList/BookList';
+import BookList from '../../components/BookList/BookList';
 
 /**
  * @description Responsavel em pesquisar livros, para adicionar na estante
@@ -19,12 +19,14 @@ export default props => (
                   However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
                   you don't find a specific author or title. Every search is limited by search terms.
                 */}
-                <input type="text" placeholder="Search by title or author" />
+                <input type="text" placeholder="Search by title or author" onChange={props.onChangeSearch}/>
 
             </div>
         </div>
         <div className="search-books-results">
-            <ol className="books-grid"></ol> 
+            <ol className="books-grid">
+                <BookList listBooks={props.listBooks}/>
+            </ol> 
         </div>
     </div>
 );
