@@ -25,7 +25,9 @@ export default props => (
         </div>
         <div className="search-books-results">
             <ol className="books-grid">
-                <BookList listBooks={props.listBooks}/>
+                <BookList 
+                    listBooks={props.listBooks}
+                    onChangeBook={props.onChangeBook}/>
             </ol> 
         </div>
     </div>
