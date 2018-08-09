@@ -11,7 +11,7 @@ export default props => (
     <ol className="books-grid">
         {props.listBooks.map((modelBook, i) => {
             console.log(modelBook);
-            return <Book key={i} id={modelBook.id} title={modelBook.title} authors={modelBook.authors} imageLinks={modelBook.imageLinks} onChangeBook={props.onChangeBook}/> 
+            return <Book key={i} id={modelBook.id} bookSelected={modelBook.shelf} title={modelBook.title} authors={modelBook.authors} imageLinks={modelBook.imageLinks} onChangeBook={props.onChangeBook}/> 
         } )}
     </ol>
 );
