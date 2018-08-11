@@ -17,6 +17,7 @@ class App extends React.Component {
     super(props);
 
     this.state = {
+      query: '',
       mapShelf: new Map(),
       listBooks: []
     }
@@ -28,9 +29,7 @@ class App extends React.Component {
 
     /**Inciando o Map */
     this.state.mapShelf.set('Currently Reading', []);
-
     this.state.mapShelf.set('Want to Read', []);
-
     this.state.mapShelf.set('Read', []);
 
     this.handleSearch = this.handleSearch.bind(this);
@@ -38,15 +37,44 @@ class App extends React.Component {
   }
 
   /**
+   * @description Quando a lista chega, preciso verificar
+   * se o livro que vem na pesquisa já esta na minha prateleira,
+   * esse metodo resolve esse problema para mim.
+   * 
+   * @param {Array} listWillModificada 
+   * @param {Array} arrayLista - de Lista; 
+   */
+  addPropertyBook(listWillModificada, arrayLista) {
+    
+    for(let i = 0; i < arrayLista.length; i++) {
+      
+      listWillModificada.map(searBook => {
+        const bookFound = arrayLista[i].find(bk => bk.id === searBook.id);
+        if(bookFound) {
+          searBook['shelf'] = bookFound['shelf'];
+          return searBook;
+        }
+        return searBook;
+      });
+
+    }
+
+  }
+
+  /**
    * @description Responsavel em pesquisar os Livros
    * @param {string} event 
    */
-  handleSearch(event) {
-    let query = event.target.value;
+  handleSearch(value) {
+    this.setState(state => ({...state, query: value}))
+    const query = value;
     if (query) {
       BooksAPI.search(query)
-        .then(result => {
-          this.setState({ listBooks: result })
+        .then(searchBooks => {
+
+          this.addPropertyBook(searchBooks, [ ...this.state.mapShelf.values()]);
+
+          this.setState({ listBooks: searchBooks })
         });
     }
   }
@@ -55,6 +83,13 @@ class App extends React.Component {
     BooksAPI.getAll()
       .then(books => {
         books.forEach(book => {
+          /**
+           * Monta minha lista na tela principal
+           * com as três pratileiras:
+           * 1) Currently Reading
+           * 2) Want to Read
+           * 3) Read
+           */
           switch(book.shelf) {
             case "currentlyReading":
               this.setState(state => {
@@ -109,15 +144,23 @@ class App extends React.Component {
       BooksAPI.get(id)
         .then(resultBook => {
           this.setState(state => {
-            BooksAPI.update(resultBook, shelfDesejada)
-              .then(() => {
-                return state.mapShelf.set( this.mapTypeShelf.get(shelfDesejada), [...state.mapShelf.get( this.mapTypeShelf.get(shelfDesejada)), resultBook]);
+            resultBook['shelf'] = shelfDesejada;
+            BooksAPI.update(resultBook, shelfDesejada);
+            return { 
+              ...state, 
+              mapShelf: state.mapShelf.set( this.mapTypeShelf.get(shelfDesejada), [...state.mapShelf.get( this.mapTypeShelf.get(shelfDesejada)), resultBook]),
+              listBooks: state.listBooks.map(book => {
+                if(book.id === id) {
+                  console.log('Encontrou')
+                  book['shelf'] = shelfDesejada;
+                  return book;
+                }
+                return book;
               })
+            };
           })
         })
     }
-
-
 
   }
 
