@@ -34,6 +34,7 @@ class App extends React.Component {
 
     this.handleSearch = this.handleSearch.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.cleanListBooks = this.cleanListBooks.bind(this);
   }
 
   /**
@@ -41,8 +42,12 @@ class App extends React.Component {
    * se o livro que vem na pesquisa já esta na minha prateleira,
    * esse metodo resolve esse problema para mim.
    * 
+   * Adicionando mais um atributo na lista da pesquisa.
+   * O atributo 'shelf'
+   * 
    * @param {Array} listWillModificada 
-   * @param {Array} arrayLista - de Lista; 
+   * @param {Array} arrayLista - de Lista, para mais detalhes
+   * na posição [0] tem uma lista [1] tem uma lista e na posição [2]; 
    */
   addPropertyBook(listWillModificada, arrayLista) {
     
@@ -65,9 +70,8 @@ class App extends React.Component {
    * @description Responsavel em pesquisar os Livros
    * @param {string} event 
    */
-  handleSearch(value) {
-    this.setState(state => ({...state, query: value}))
-    const query = value;
+  handleSearch(query) {
+    
     if (query) {
       BooksAPI.search(query)
         .then(searchBooks => {
@@ -76,7 +80,13 @@ class App extends React.Component {
 
           this.setState({ listBooks: searchBooks })
         });
+    }else {
+      this.cleanListBooks();
     }
+  }
+
+  cleanListBooks() {
+    this.setState(state => ({ ...state, listBooks: [] }));
   }
 
   componentDidMount() {
@@ -118,10 +128,11 @@ class App extends React.Component {
    * @param {object} event 
    */
   handleChange(event) {
-    let id = event.target.id;
-    let shelfDesejada = event.target.value;
+    const id = event.target.id;
+    const shelfDesejada = event.target.value;
+    const listOfKeysShelfs = [...this.state.mapShelf.keys()];
     
-    let shelfActual = [...this.state.mapShelf.keys()].find(key => {
+    let shelfActual = listOfKeysShelfs.find(key => {
       return [...this.state.mapShelf.get(key)].some(book => book.id === id) ? key : undefined ;
     })
 
@@ -151,7 +162,6 @@ class App extends React.Component {
               mapShelf: state.mapShelf.set( this.mapTypeShelf.get(shelfDesejada), [...state.mapShelf.get( this.mapTypeShelf.get(shelfDesejada)), resultBook]),
               listBooks: state.listBooks.map(book => {
                 if(book.id === id) {
-                  console.log('Encontrou')
                   book['shelf'] = shelfDesejada;
                   return book;
                 }
@@ -177,6 +187,7 @@ class App extends React.Component {
 
         <Route path="/search" render={() => (
           <Search
+            onCleanBooks={this.cleanListBooks}
             onChangeSearch={this.handleSearch}
             listBooks={this.state.listBooks}
             onChangeBook={this.handleChange}
