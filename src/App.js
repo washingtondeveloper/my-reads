@@ -9,7 +9,7 @@ import Shelf from './containers/Shelf/Shelf';
 import './styles/App.css';
 
 /**
- * @description Todo o stado vai ficar nessa classe, tentando aproveitar a maioria dos componentes
+ * @description Todo o estado vai ficar nessa classe, 'single source of thruth'
  */
 class App extends React.Component {
 
@@ -17,17 +17,23 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      query: '',
       mapShelf: new Map(),
-      listBooks: []
+      listBooks: [] // Lista de livros da pesquisa
     }
 
+    /**
+     * @description Esse Map foi criado para auxilar o tipo de pratileira,
+     * a chave do desse Map e o value do select, e seu valor é a Chave do outro Map
+     * para podermos organizar a pratileira.
+     */
     this.mapTypeShelf = new Map();
     this.mapTypeShelf.set('currentlyReading', 'Currently Reading');
     this.mapTypeShelf.set('wantToRead', 'Want to Read');
     this.mapTypeShelf.set('read', 'Read');
 
-    /**Inciando o Map */
+    /**
+     * @description Map de pratileira
+     */
     this.state.mapShelf.set('Currently Reading', []);
     this.state.mapShelf.set('Want to Read', []);
     this.state.mapShelf.set('Read', []);
@@ -75,6 +81,12 @@ class App extends React.Component {
     if (query) {
       BooksAPI.search(query)
         .then(searchBooks => {
+          const { error } = searchBooks;
+          if(error) {
+            console.error(error);
+            this.cleanListBooks();
+            return;
+          }
 
           this.addPropertyBook(searchBooks, [ ...this.state.mapShelf.values()]);
 
@@ -130,27 +142,22 @@ class App extends React.Component {
   handleChange(event) {
     const id = event.target.id;
     const shelfDesejada = event.target.value;
-    const listOfKeysShelfs = [...this.state.mapShelf.keys()];
+    const listOfKeys = [...this.state.mapShelf.keys()];
     
-    let shelfActual = listOfKeysShelfs.find(key => {
+    let shelfActual = listOfKeys.find(key => {
       return [...this.state.mapShelf.get(key)].some(book => book.id === id) ? key : undefined ;
-    })
+    });
+
+    if(shelfDesejada === 'none') {
+      this.removeShelf({ shelfActual, shelfDesejada, id });
+      return;
+    }
+
 
     if(shelfActual) {
-      /** Setar na desejada */
-      this.setState(state => {
-        const bookFound = state.mapShelf.get(shelfActual).find(b => b.id === id);
-        bookFound.shelf = shelfDesejada;
-        BooksAPI.update(bookFound, shelfDesejada);
-        return state.mapShelf.set(this.mapTypeShelf.get(shelfDesejada), [...state.mapShelf.get(this.mapTypeShelf.get(shelfDesejada)), bookFound]);
-      });
+      this.setShelfDesejada({ shelfActual, shelfDesejada, id });
 
-      /**Remove da Atual */
-      this.setState(state => {
-        let list = state.mapShelf.get(shelfActual);
-        let newList = list.filter(book => book.id !== id);
-        return state.mapShelf.set(shelfActual, newList);
-      });
+      this.removeShelf({ shelfActual, shelfDesejada, id});
     } else {
       BooksAPI.get(id)
         .then(resultBook => {
@@ -172,6 +179,40 @@ class App extends React.Component {
         })
     }
 
+  }
+
+  setShelfDesejada(shelf) {
+
+    const { id, shelfActual, shelfDesejada } = shelf;
+
+    this.setState(state => {
+      const bookFound = state.mapShelf.get(shelfActual).find(b => b.id === id);
+      bookFound.shelf = shelfDesejada;
+      BooksAPI.update(bookFound, shelfDesejada);
+      return {
+        ...state, 
+        mapShelf: state.mapShelf.set(this.mapTypeShelf.get(shelfDesejada), [...state.mapShelf.get(this.mapTypeShelf.get(shelfDesejada)), bookFound]) 
+      };
+    });
+  }
+
+  removeShelf(shelf) {
+    const { id, shelfActual, shelfDesejada } = shelf;
+
+    this.setState(state => {
+      let list = state.mapShelf.get(shelfActual);
+      let newList = list.filter(book => book.id !== id);
+
+      if(shelfDesejada === 'none') {
+        const book = list.find(bk => bk.id === id);
+        BooksAPI.update(book, shelfDesejada);
+      }
+
+      return {
+        ...state, 
+        mapShelf: state.mapShelf.set(shelf.shelfActual, newList) 
+      };
+    });
   }
 
   render() {
