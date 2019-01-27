@@ -2,7 +2,7 @@
   "name": "my-reads",
   "version": "0.1.0",
   "private": true,
-  "homepage":"https://washingtondeveloper.github.io/my-reads",
+  "homepage": "https://washingtondeveloper.github.io/my-reads",
   "dependencies": {
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
@@ -17,6 +17,8 @@
     "deploy": "gh-pages -d build"
   },
   "devDependencies": {
-    "gh-pages": "^2.0.1"
+    "gh-pages": "^2.0.1",
+    "react-redux": "^6.0.0",
+    "redux": "^4.0.1"
   }
 }
