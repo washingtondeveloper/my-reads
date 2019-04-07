@@ -1,7 +1,9 @@
-import { combineReducers } from 'redux'
+import { combineReducers } from 'redux';
 
-import bookReducer from './book/bookReducer'
+import searchReducer from './search/searchReducer';
+import shelfReducer from './shelf/shelfReducer';
 
 export default combineReducers({
-    book: bookReducer
-})
+	books: searchReducer,
+	mapShelf: shelfReducer
+});

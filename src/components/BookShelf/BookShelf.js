@@ -7,11 +7,17 @@ import BookList from '../BookList/BookList';
  * @param listBooks Lista de Books
  * @param title Titulo da estante
  */
-export default props => (
-    <div className="bookshelf">
-        <h2 className="bookshelf-title">{props.title}</h2>
-        <div className="bookshelf-books">
-            <BookList listBooks={props.listBooks} onChangeBook={props.onChangeBook}/>
-        </div>
-    </div>
-);
+class BookShelf extends React.Component {
+	render() {
+		return (
+			<div className="bookshelf">
+				<h2 className="bookshelf-title">{this.props.title}</h2>
+				<div className="bookshelf-books">
+					<BookList listBooks={this.props.listBooks} onChangeBook={this.props.onChangeBook} />
+				</div>
+			</div>
+		);
+	}
+}
+
+export default BookShelf;
