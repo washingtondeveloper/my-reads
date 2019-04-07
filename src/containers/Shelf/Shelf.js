@@ -12,6 +12,19 @@ class Shelf extends React.Component {
 		this.props.searchShelf();
 	}
 
+	translate = (text) => {
+		switch (text) {
+			case 'currentlyReading':
+				return 'Lendo Atualmente';
+			case 'wantToRead':
+				return 'Quero Ler';
+			case 'read':
+				return 'Lido';
+			default:
+				return;
+		}
+	};
+
 	render() {
 		const { shelf } = this.props;
 
@@ -21,7 +34,7 @@ class Shelf extends React.Component {
 				<div className="list-books-content">
 					<div>
 						{[ ...Object.keys(shelf) ].map((key, i) => (
-							<BookShelf key={i} title={key} listBooks={shelf[key]} />
+							<BookShelf key={i} title={this.translate(key)} listBooks={shelf[key]} />
 						))}
 					</div>
 				</div>
